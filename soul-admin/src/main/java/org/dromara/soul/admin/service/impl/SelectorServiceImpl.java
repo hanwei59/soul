@@ -38,6 +38,7 @@ import org.dromara.soul.admin.mapper.SelectorConditionMapper;
 import org.dromara.soul.admin.mapper.SelectorMapper;
 import org.dromara.soul.admin.page.CommonPager;
 import org.dromara.soul.admin.page.PageParameter;
+import org.dromara.soul.admin.page.PageResultUtils;
 import org.dromara.soul.admin.query.RuleConditionQuery;
 import org.dromara.soul.admin.query.RuleQuery;
 import org.dromara.soul.admin.query.SelectorConditionQuery;
@@ -222,12 +223,8 @@ public class SelectorServiceImpl implements SelectorService {
     @Override
     public CommonPager<SelectorVO> listByPage(final SelectorQuery selectorQuery) {
         PageParameter pageParameter = selectorQuery.getPageParameter();
-        return new CommonPager<>(
-                new PageParameter(pageParameter.getCurrentPage(), pageParameter.getPageSize(),
-                        selectorMapper.countByQuery(selectorQuery)),
-                selectorMapper.selectByQuery(selectorQuery).stream()
-                        .map(SelectorVO::buildSelectorVO)
-                        .collect(Collectors.toList()));
+        Integer count = selectorMapper.countByQuery(selectorQuery);
+        return PageResultUtils.result(pageParameter, count, () -> selectorMapper.selectByQuery(selectorQuery).stream().map(SelectorVO::buildSelectorVO).collect(Collectors.toList()));
     }
 
     @Override
